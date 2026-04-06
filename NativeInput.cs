@@ -17,7 +17,7 @@ namespace KeepAwakeApp
         {
             public int dx;
             public int dy;
-            public uint mouseData;   // dùng cho wheel, XBUTTON
+            public uint mouseData;   // used for wheel, XBUTTON
             public uint dwFlags;
             public uint time;
             public IntPtr dwExtraInfo;
@@ -26,14 +26,14 @@ namespace KeepAwakeApp
         [DllImport("user32.dll", SetLastError = true)]
         public static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
-        // Optionally, lấy vị trí chuột hiện tại
+        // Optionally, get current cursor position
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT { public int X; public int Y; }
 
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
 
-        // Optional: kiểm tra phím/chuột đang được nhấn để tránh click nhầm
+        // Optional: check if a key/mouse button is pressed to avoid accidental clicks
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(int vKey);
 
@@ -50,7 +50,7 @@ namespace KeepAwakeApp
         public const uint MOUSEEVENTF_XUP = 0x0200;
         public const uint MOUSEEVENTF_ABSOLUTE = 0x8000;
 
-        // Con lăn: 120 = 1 notch (tick). Dương = scroll lên, âm = scroll xuống.
+        // Wheel: 120 = 1 notch (tick). Positive = scroll up, negative = scroll down.
         public const int WHEEL_DELTA = 120;
 
     }

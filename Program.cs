@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace KeepAwakeApp
@@ -21,9 +19,13 @@ namespace KeepAwakeApp
             bool isFirstInstance;
             using (var mutex = new Mutex(true, SingleInstanceMutexName, out isFirstInstance))
             {
-                if (!isFirstInstance)
+                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                if (!isFirstInstance && isWindows)
                 {
-                    SignalRunningInstance();
+                    using (var duplicateLaunchEvent = EventWaitHandle.OpenExisting(DuplicateLaunchEventName))
+                    {
+                        duplicateLaunchEvent.Set();
+                    }
                     return;
                 }
 
@@ -53,21 +55,6 @@ namespace KeepAwakeApp
                         registeredWait?.Unregister(null);
                     }
                 }
-            }
-        }
-
-        private static void SignalRunningInstance()
-        {
-            try
-            {
-                using (var duplicateLaunchEvent = EventWaitHandle.OpenExisting(DuplicateLaunchEventName))
-                {
-                    duplicateLaunchEvent.Set();
-                }
-            }
-            catch (WaitHandleCannotBeOpenedException)
-            {
-                // The first instance may still be starting up.
             }
         }
     }
