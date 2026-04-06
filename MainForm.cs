@@ -160,6 +160,25 @@ namespace KeepAwakeApp
             Show();
         }
 
+        public void NotifyAlreadyRunning()
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                BeginInvoke((Action)NotifyAlreadyRunning);
+                return;
+            }
+
+            notifyIcon1.BalloonTipTitle = "KeepAwakeApp";
+            notifyIcon1.BalloonTipText = "Application is already running.";
+            notifyIcon1.BalloonTipIcon = ToolTipIcon.Warning;
+            notifyIcon1.ShowBalloonTip(3000);
+        }
+
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             ShowWindow();
