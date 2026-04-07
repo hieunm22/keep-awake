@@ -93,9 +93,7 @@ namespace KeepAwakeApp
             var x = int.Parse(tbX.Text);
             var y = int.Parse(tbY.Text);
 
-            // Pack the coordinates
-            var dw = (y << 16) | (x & 0xFFFF);
-            Cursor.Position = new System.Drawing.Point(dw);
+            Cursor.Position = new System.Drawing.Point(x, y);
         }
 
         private void LeftClick()

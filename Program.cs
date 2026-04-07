@@ -7,8 +7,8 @@ namespace KeepAwakeApp
 {
     internal static class Program
     {
-        private const string SingleInstanceMutexName = "Local\\KeepAwakeApp.SingleInstanceMutex";
-        private const string DuplicateLaunchEventName = "Local\\KeepAwakeApp.DuplicateLaunchEvent";
+        const string SingleInstanceMutexName = "SingleInstanceMutex";
+        const string DuplicateLaunchEventName = "DuplicateLaunchEvent";
 
         /// <summary>
         /// The main entry point for the application.
