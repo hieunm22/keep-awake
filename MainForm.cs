@@ -7,6 +7,7 @@ namespace KeepAwakeApp
     public partial class MainForm : Form
     {
         private System.Timers.Timer activityTimer;
+        private System.Timers.Timer shutdownTimer;
 
         [DllImport("user32.dll")]
         static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
@@ -194,6 +195,28 @@ namespace KeepAwakeApp
             activityTimer.Start();
             activityTimer.Enabled = true;
             activityTimer.Interval = TimeTicked * 1000;
+            if (ckbShutdown.Checked)
+            {
+                shutdownTimer = new System.Timers.Timer();
+                shutdownTimer.Elapsed += (source, eve) =>
+                {
+                    Application.Exit();
+                };
+                shutdownTimer.AutoReset = true;
+                shutdownTimer.Start();
+                shutdownTimer.Enabled = true;
+                var remain = shutdownDTP.Value - DateTime.Now;
+                if (remain.TotalSeconds < 0)
+                {
+                    remain = shutdownDTP.Value.AddDays(1d) - DateTime.Now;
+                }
+                shutdownTimer.Interval = remain.TotalMilliseconds;
+            }
+            else if (shutdownTimer.Enabled)
+            {
+                shutdownTimer.Stop();
+                shutdownTimer.Enabled = false;
+            }
             Close();
         }
 
@@ -206,6 +229,11 @@ namespace KeepAwakeApp
         {
             tbX.Enabled = ckbLocation.Checked;
             tbY.Enabled = ckbLocation.Checked;
+        }
+
+        private void ckbShutdown_CheckedChanged(object sender, EventArgs e)
+        {
+            shutdownDTP.Enabled = ckbShutdown.Checked;
         }
     }
 }
