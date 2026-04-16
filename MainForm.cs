@@ -56,6 +56,8 @@ namespace KeepAwakeApp
             };
             activityTimer.AutoReset = true;
             activityTimer.Enabled = true;
+            var today = DateTime.Today;
+            shutdownDTP.Value = new DateTime(today.Year, today.Month, today.Day, 19, 30, 0);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -175,7 +177,13 @@ namespace KeepAwakeApp
             notifyIcon1.BalloonTipTitle = "KeepAwakeApp";
             notifyIcon1.BalloonTipText = "Application is already running.";
             notifyIcon1.BalloonTipIcon = ToolTipIcon.Warning;
+            notifyIcon1.BalloonTipClicked += notifyIcon1_BalloonTipClicked;
             notifyIcon1.ShowBalloonTip(3000);
+        }
+
+        private void notifyIcon1_BalloonTipClicked(object sender, EventArgs e)
+        {
+            ShowWindow();
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -200,19 +208,20 @@ namespace KeepAwakeApp
                 shutdownTimer = new System.Timers.Timer();
                 shutdownTimer.Elapsed += (source, eve) =>
                 {
+                    System.IO.File.AppendAllText("keep-awake.log", $"Application shutdown at {DateTime.Now:dd/MM/yyyy H:mm:ss}{Environment.NewLine}");
                     Application.Exit();
                 };
                 shutdownTimer.AutoReset = true;
-                shutdownTimer.Start();
-                shutdownTimer.Enabled = true;
                 var remain = shutdownDTP.Value - DateTime.Now;
                 if (remain.TotalSeconds < 0)
                 {
                     remain = shutdownDTP.Value.AddDays(1d) - DateTime.Now;
                 }
                 shutdownTimer.Interval = remain.TotalMilliseconds;
+                shutdownTimer.Start();
+                shutdownTimer.Enabled = true;
             }
-            else if (shutdownTimer.Enabled)
+            else if (shutdownTimer != null && shutdownTimer.Enabled)
             {
                 shutdownTimer.Stop();
                 shutdownTimer.Enabled = false;
